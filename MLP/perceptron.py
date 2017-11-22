@@ -29,6 +29,7 @@ class Perceptron:
             if self.hasBias:
                 self.weights = np.random.rand(len(input) + 1)
                 input = np.append(input, [1])
+                print(input)
             else:
                 self.weights = np.random.rand(len(input))
 
