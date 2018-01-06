@@ -4,7 +4,7 @@
 
 from sklearn.datasets import load_iris
 import numpy as np
-import knn
+from knn import KNN
 
 # Load dataset and init training and test data.
 iris_dataset = load_iris()
@@ -14,12 +14,12 @@ training_data = data[:100]
 test_data = data[100:]
 
 properly_classified = 0
-for test_point in test_data:
+knn = KNN(training_data, test_data, 3)
 
-    knn_heap = knn.init_point_heap(training_data, test_point)
-    point_class = knn.classify_point(knn_heap, test_point, k=3)
+for point in test_data:
 
-    if(point_class == test_point[1]):
+    classification_label = knn.classify_point(point[0])
+    if(point[1] == classification_label):
         properly_classified += 1
 
-print "Properly classified :", properly_classified, "/", len(test_data)
+print "Properly classifed : ", properly_classified, "/", len(test_data)
