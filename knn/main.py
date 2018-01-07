@@ -2,15 +2,22 @@
 
 # !/usr/bin/env python
 
-# from sklearn.datasets import load_iris
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 from knn import KNN
 
-# Load dataset and init training and test data.
+# Load dataset.
 dataset = pd.read_csv("wine.csv", header=None)
 data = dataset.as_matrix()
 np.random.shuffle(data)
+
+# Standarize the data.
+# data_points = np.delete(data, 4, axis=1)
+# preprocessing.scale(data_points)
+
+# Kocham Pythona za te one-linery <3 <3 <3
+data[:, :-1] = preprocessing.scale(data[:, :-1])
 
 # Create (point, label) tuple
 data_tuples = []

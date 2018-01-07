@@ -33,10 +33,6 @@ class KNN:
         for label in self.classification_labels:
             class_count[label] = 0
 
-        # class_count = {'Iris-setosa': 0,
-        #                'Iris-versicolor': 0,
-        #                'Iris-virginica': 0}
-
         for i in range(0, self.k):
             neighbour = heapq.heappop(self.knn_heap)
             class_count[neighbour[1]] += 1
