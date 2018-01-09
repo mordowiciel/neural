@@ -1,6 +1,9 @@
 def divide_k_cross(data, test_index):
 
-    k_data = [data[:50], data[50:100], data[100:]]
+    # Calculate the dataset split.
+    split = len(data) / 3
+
+    k_data = [data[:split], data[split:2 * split], data[2 * split:]]
     test_data = k_data[test_index]
 
     k_data.pop(test_index)
