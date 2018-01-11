@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import itertools
+import os.path
+
 
 def divide_k_cross(data, test_index):
 
@@ -36,13 +38,17 @@ def convert_to_point_label_tuple(data_matrix):
     return data_tuples
 
 
-def plot_confusion_matrix(cm, classes,
+def plot_confusion_matrix(number_of_neighbours,
+                          metric,
+                          dataset_name,
+                          is_normalized,
+                          cm,
+                          classes,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
     print(cm)
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
     plt.xticks(tick_marks, classes, rotation=45)
@@ -55,8 +61,16 @@ def plot_confusion_matrix(cm, classes,
                  horizontalalignment="center",
                  color="white" if cm[i, j] > thresh else "black")
 
-    plt.tight_layout()
+    plt.tight_layout(pad=1.75)
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-    plt.show()
+# plt.show()
+    dataset_name = dataset_name.split("/")[1].split(".")[0]
+    normalized_str = ""
+    if(is_normalized):
+        normalized_str = "_norm"
+
+    plot_name = str(number_of_neighbours) + "N" + "_" + metric + "_" + dataset_name + normalized_str
+
+    plt.savefig("plots" + "/" + dataset_name + "/" + plot_name)

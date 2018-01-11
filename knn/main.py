@@ -84,6 +84,11 @@ for i in range(0, 3):
 
 # Get the sum confusion matrix from k-fold.
 average_cm = np.sum(confusion_matrixes, axis=0)
-# du.plot_confusion_matrix(average_cm.astype(int), classes=class_labels,
-#                          title='Confusion matrix')
+du.plot_confusion_matrix(NUMBER_OF_NEIGHBOURS_ARG,
+                         METRIC_ARG,
+                         DATASET_ARG,
+                         NORMALIZE_BOOL_ARG,
+                         average_cm.astype(int),
+                         classes=class_labels,
+                         title='Confusion matrix')
 print ""
