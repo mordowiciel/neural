@@ -23,8 +23,6 @@ class KNN:
         for point in self.training_data:
 
             distance = 0
-            print self.metric
-
             if(self.metric == "euclidean"):
                 distance = du.euclidean_distance(point[0], test_point)
             if(self.metric == "manhattan"):

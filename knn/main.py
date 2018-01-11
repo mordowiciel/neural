@@ -33,7 +33,10 @@ METRIC_ARG = args.metrics
 DATASET_ARG = args.dataset
 NORMALIZE_BOOL_ARG = args.normalize
 
-print NORMALIZE_BOOL_ARG
+print "Number of neighbours", NUMBER_OF_NEIGHBOURS_ARG
+print "Metric", METRIC_ARG
+print "Dataset", DATASET_ARG
+print "Normalizing", NORMALIZE_BOOL_ARG
 
 # Load dataset.
 dataset = pd.read_csv(DATASET_ARG, header=None)
@@ -81,5 +84,6 @@ for i in range(0, 3):
 
 # Get the sum confusion matrix from k-fold.
 average_cm = np.sum(confusion_matrixes, axis=0)
-du.plot_confusion_matrix(average_cm.astype(int), classes=class_labels,
-                         title='Confusion matrix')
+# du.plot_confusion_matrix(average_cm.astype(int), classes=class_labels,
+#                          title='Confusion matrix')
+print ""
