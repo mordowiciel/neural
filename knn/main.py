@@ -1,21 +1,48 @@
-"""Main file of KNN program."""
-
-# !/usr/bin/env python
+#!/usr/bin/env python
 
 import numpy as np
 import pandas as pd
 import dataset_utils as du
+import argparse
+
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
 from knn import KNN
 
+# Setup argparse.
+parser = argparse.ArgumentParser(description='SISE Zadanie 2 - KNN')
+parser.add_argument('--neighbours',
+                    type=int,
+                    required=True,
+                    help="Number of neighbours used in KNN search")
+parser.add_argument('--metrics',
+                    required=True,
+                    help="Metric used to calculate distance between points")
+parser.add_argument('--dataset',
+                    required=True,
+                    help="Dataset to perform KNN")
+parser.add_argument('--normalize',
+                    action='store_true',
+                    required=False,
+                    help="Perform data normalization")
+
+args = parser.parse_args()
+
+NUMBER_OF_NEIGHBOURS_ARG = args.neighbours
+METRIC_ARG = args.metrics
+DATASET_ARG = args.dataset
+NORMALIZE_BOOL_ARG = args.normalize
+
+print NORMALIZE_BOOL_ARG
+
 # Load dataset.
-dataset = pd.read_csv("iris.csv", header=None)
+dataset = pd.read_csv(DATASET_ARG, header=None)
 data = dataset.as_matrix()
 np.random.shuffle(data)
 
 # Standarize the data.
-data[:, :-1] = preprocessing.scale(data[:, :-1])
+if(NORMALIZE_BOOL_ARG is True):
+    data[:, :-1] = preprocessing.scale(data[:, :-1])
 
 # Get classification labels from dataset,
 # convert matrix to (data, label) tuple.
@@ -31,7 +58,11 @@ for i in range(0, 3):
     predicted_arr = []
 
     training_data, test_data = du.divide_k_cross(data, i)
-    knn = KNN(training_data, test_data, class_labels, 3)
+    knn = KNN(training_data,
+              test_data,
+              class_labels,
+              NUMBER_OF_NEIGHBOURS_ARG,
+              METRIC_ARG)
 
     for point in test_data:
 
