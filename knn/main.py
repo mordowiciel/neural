@@ -42,26 +42,40 @@ print "Normalizing", NORMALIZE_BOOL_ARG
 # Load dataset.
 dataset = pd.read_csv(DATASET_ARG, header=None)
 data = dataset.as_matrix()
-np.random.shuffle(data)
+
+# Get class labels.
+class_labels = du.get_classification_labels(data)
 
 # Standarize the data.
 if(NORMALIZE_BOOL_ARG is True):
     data[:, :-1] = preprocessing.scale(data[:, :-1])
 
-# Get classification labels from dataset,
-# convert matrix to (data, label) tuple.
-class_labels = du.get_classification_labels(data)
-data = du.convert_to_point_label_tuple(data)
+data_arr = data[:, :-1]
+data_lab = data[:, -1]
 
-# Perform k-cross validation
+skf = StratifiedKFold(n_splits=3)
+skf.get_n_splits(data_arr, data_lab)
+
 confusion_matrixes = []
-for i in range(0, 3):
+for train_index, test_index in skf.split(data_arr, data_lab):
 
-    properly_classified = 0
+    data_arr_train, data_arr_test = data_arr[train_index], data_arr[test_index]
+    data_lab_train, data_lab_test = data_lab[train_index], data_lab[test_index]
+
     true_arr = []
     predicted_arr = []
+    properly_classified = 0
 
-    training_data, test_data = du.divide_k_cross(data, i)
+    training_data = []
+    for i in range(0, len(data_arr_train)):
+        train_tuple = (data_arr_train[i], data_lab_train[i])
+        training_data.append(train_tuple)
+
+    test_data = []
+    for i in range(0, len(data_arr_test)):
+        test_tuple = (data_arr_test[i], data_lab_test[i])
+        test_data.append(test_tuple)
+
     knn = KNN(training_data,
               test_data,
               class_labels,
@@ -71,7 +85,6 @@ for i in range(0, 3):
     for point in test_data:
 
         classification_label = knn.classify_point(point[0])
-
         true_arr.append(point[1])
         predicted_arr.append(classification_label)
 
@@ -87,9 +100,9 @@ for i in range(0, 3):
         print "False negatives for", class_label, str(row_sum)
         print "False positives for", class_label, str(col_sum)
 
-    print "Properly classifed : ", properly_classified, "/", len(test_data)
-    print cm
-    confusion_matrixes.append(cm)
+        print "Properly classifed : ", properly_classified, "/", len(test_data)
+        print cm
+        confusion_matrixes.append(cm)
 
 # Get the sum confusion matrix from k-fold.
 average_cm = np.sum(confusion_matrixes, axis=0)
@@ -101,3 +114,62 @@ du.plot_confusion_matrix(NUMBER_OF_NEIGHBOURS_ARG,
                          classes=class_labels,
                          title='Confusion matrix')
 print ""
+
+
+# # Standarize the data.
+# if(NORMALIZE_BOOL_ARG is True):
+#     data[:, :-1] = preprocessing.scale(data[:, :-1])
+#
+# # Get classification labels from dataset,
+# # convert matrix to (data, label) tuple.
+# class_labels = du.get_classification_labels(data)
+# data = du.convert_to_point_label_tuple(data)
+#
+# # Perform k-cross validation
+# confusion_matrixes = []
+# for i in range(0, 3):
+#
+#     properly_classified = 0
+#     true_arr = []
+#     predicted_arr = []
+#
+#     training_data, test_data = du.divide_k_cross(data, i)
+#     knn = KNN(training_data,
+#               test_data,
+#               class_labels,
+#               NUMBER_OF_NEIGHBOURS_ARG,
+#               METRIC_ARG)
+#
+#     for point in test_data:
+#
+#         classification_label = knn.classify_point(point[0])
+#
+#         true_arr.append(point[1])
+#         predicted_arr.append(classification_label)
+#
+#         if(point[1] == classification_label):
+#             properly_classified += 1
+#
+#     cm = confusion_matrix(true_arr, predicted_arr)
+#
+#     for index, class_label in enumerate(class_labels):
+#
+#         row_sum = np.sum(cm[index, :]) - cm[index][index]
+#         col_sum = np.sum(cm[:, index]) - cm[index][index]
+#         print "False negatives for", class_label, str(row_sum)
+#         print "False positives for", class_label, str(col_sum)
+#
+#     print "Properly classifed : ", properly_classified, "/", len(test_data)
+#     print cm
+#     confusion_matrixes.append(cm)
+#
+# # Get the sum confusion matrix from k-fold.
+# average_cm = np.sum(confusion_matrixes, axis=0)
+# du.plot_confusion_matrix(NUMBER_OF_NEIGHBOURS_ARG,
+#                          METRIC_ARG,
+#                          DATASET_ARG,
+#                          NORMALIZE_BOOL_ARG,
+#                          average_cm.astype(int),
+#                          classes=class_labels,
+#                          title='Confusion matrix')
+# print ""

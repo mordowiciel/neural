@@ -32,6 +32,6 @@ def chebyshev_distance(arr1, arr2):
 
     result_arr = []
     for n in range(0, arr1.size):
-        result_arr.append(arr1[n] - arr2[n])
+        result_arr.append(abs(arr1[n] - arr2[n]))
 
     return max(result_arr)
