@@ -72,5 +72,4 @@ def plot_confusion_matrix(number_of_neighbours,
         normalized_str = "_norm"
 
     plot_name = str(number_of_neighbours) + "N" + "_" + metric + "_" + dataset_name + normalized_str
-
     plt.savefig("plots" + "/" + dataset_name + "/" + plot_name)

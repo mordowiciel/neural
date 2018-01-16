@@ -7,6 +7,7 @@ import argparse
 
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import StratifiedKFold
 from knn import KNN
 
 # Setup argparse.
@@ -77,8 +78,16 @@ for i in range(0, 3):
         if(point[1] == classification_label):
             properly_classified += 1
 
-    print "Properly classifed : ", properly_classified, "/", len(test_data)
     cm = confusion_matrix(true_arr, predicted_arr)
+
+    for index, class_label in enumerate(class_labels):
+
+        row_sum = np.sum(cm[index, :]) - cm[index][index]
+        col_sum = np.sum(cm[:, index]) - cm[index][index]
+        print "False negatives for", class_label, str(row_sum)
+        print "False positives for", class_label, str(col_sum)
+
+    print "Properly classifed : ", properly_classified, "/", len(test_data)
     print cm
     confusion_matrixes.append(cm)
 

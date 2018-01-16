@@ -43,8 +43,12 @@ class KNN:
         for label in self.classification_labels:
             class_count[label] = 0
 
-        for i in range(0, self.k):
+        closest_neighbour = heapq.heappop(self.knn_heap)
+        for i in range(0, self.k - 1):
             neighbour = heapq.heappop(self.knn_heap)
             class_count[neighbour[1]] += 1
+
+        if(len(class_count.values()) != len(set(class_count.values()))):
+            return closest_neighbour[1]
 
         return max(class_count, key=class_count.get)
