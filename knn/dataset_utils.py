@@ -1,41 +1,52 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 import numpy as np
 import itertools
 import os.path
 
 
-def divide_k_cross(data, test_index):
+def convert_to_data_tuple(data, labels, train_index, test_index):
+    data_train, data_test = data[train_index], data[test_index]
+    labels_train, labels_test = labels[train_index], labels[test_index]
 
-    # Calculate the dataset split.
-    split = len(data) / 3
+    training_data = []
+    for i in range(0, len(data_train)):
+        train_tuple = (data_train[i], labels_train[i])
+        training_data.append(train_tuple)
 
-    k_data = [data[:split], data[split:2 * split], data[2 * split:]]
-    test_data = k_data[test_index]
-
-    k_data.pop(test_index)
-
-    training_data = k_data
-    training_data = k_data[0] + k_data[1]
+    test_data = []
+    for i in range(0, len(data_test)):
+        test_tuple = (data_test[i], labels_test[i])
+        test_data.append(test_tuple)
 
     return training_data, test_data
 
 
-def get_classification_labels(data_matrix):
-    class_labels = set([])
-    for row in data_matrix:
-        class_labels.add(row[-1])
-    return class_labels
+def create_confusion_matrix(knn, test_data):
+
+    true_arr = []
+    predicted_arr = []
+
+    for point in test_data:
+        classification_label = knn.classify_point(point[0])
+        true_arr.append(point[1])
+        predicted_arr.append(classification_label)
+
+        # if(point[1] == classification_label):
+        #     properly_classified += 1
+
+    cm = confusion_matrix(true_arr, predicted_arr)
+    return cm
 
 
-def convert_to_point_label_tuple(data_matrix):
+def print_cm_info(cm, labels):
+    for index, class_label in enumerate(set(labels)):
+        row_sum = np.sum(cm[index, :]) - cm[index][index]
+        col_sum = np.sum(cm[:, index]) - cm[index][index]
+        print "False negatives for", class_label, str(row_sum)
+        print "False positives for", class_label, str(col_sum)
 
-    data_tuples = []
-    class_labels = set([])
-    for row in data_matrix:
-        row_tuple = (row[:-1], row[-1])
-        data_tuples.append(row_tuple)
-
-    return data_tuples
+    print cm
 
 
 def plot_confusion_matrix(number_of_neighbours,
@@ -46,7 +57,9 @@ def plot_confusion_matrix(number_of_neighbours,
                           classes,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
-    print(cm)
+
+    print "Inside plot_confusion_matrix"
+    print cm
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.colorbar()
@@ -65,7 +78,6 @@ def plot_confusion_matrix(number_of_neighbours,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-# plt.show()
     dataset_name = dataset_name.split("/")[1].split(".")[0]
     normalized_str = ""
     if(is_normalized):
